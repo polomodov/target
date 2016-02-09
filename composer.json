@@ -1,0 +1,15 @@
+{
+  "name": "MobioInc/myTarget",
+  "require":
+  {
+    "php": ">=5.5.0",
+    "guzzlehttp/guzzle": "^6.1"
+  },
+  "autoload":
+  {
+    "psr-4":
+    {
+      "Mobio\\Target\\": "src/"
+    }
+  }
+}
