@@ -3,6 +3,7 @@ My Target API
 
 Установка с помощью composer:
 
+```json
 {
   "require": {
     "MobioInc/myTarget": "dev-master"
@@ -14,9 +15,11 @@ My Target API
     }
   ]
 }
+```
 
 Пример использования:
 
+```php
 <?php
 include __DIR__. "/vendor/autoload.php";
 
@@ -38,3 +41,4 @@ try {
 }
 
 var_dump($clientsArray);
+```
