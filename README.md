@@ -6,12 +6,12 @@ My Target API
 ```json
 {
   "require": {
-    "MobioInc/myTarget": "dev-master"
+    "MobioInc/target": "dev-master"
   },
   "repositories":[
     {
       "type":"git",
-      "url":"https://github.com/MobioInc/myTarget"
+      "url":"https://github.com/MobioInc/target"
     }
   ]
 }
