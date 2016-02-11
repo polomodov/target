@@ -8,8 +8,7 @@ My Target API
   "require": {
     "MobioInc/target": "dev-master"
   },
-  "repositories":[
-    {
+  "repositories":[{
       "type":"git",
       "url":"https://github.com/MobioInc/target"
     }
