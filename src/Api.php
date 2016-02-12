@@ -130,7 +130,7 @@ class Api
 
         $jsonContent[] = [
             'client_id' => $this->_connectionData['client_id'],
-            'token' => $this->_token,
+            'token' => $response->parse()->access_token,
             'refresh_token' => $response->parse()->refresh_token,
             'date' => date('Y-m-d')
         ];
