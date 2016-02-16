@@ -6,7 +6,7 @@ My Target API
 ```json
 {
   "require": {
-    "mobio/target": "dev-master"
+    "mobio/target": "*"
   }
 }
 ```
