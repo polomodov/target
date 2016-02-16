@@ -1,15 +1,23 @@
 {
-  "name": "MobioInc/target",
-  "require":
-  {
+  "name": "mobio/target",
+  "description": "PHP library for myTarget API",
+  "version": "0.0.2",
+  "type": "library",
+  "keywords": ["php", "myTarget"],
+  "license": "MIT",
+  "require": {
     "php": ">=5.5.0",
     "guzzlehttp/guzzle": "^6.1"
   },
-  "autoload":
-  {
-    "psr-4":
-    {
+  "autoload": {
+    "psr-4": {
       "Mobio\\Target\\": "src/"
     }
-  }
+  },
+  "repositories": [
+    {
+      "type":"git",
+      "url":"https://github.com/MobioInc/target"
+    }
+  ]
 }
