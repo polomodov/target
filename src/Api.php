@@ -82,7 +82,7 @@ class Api
      * Get token from the cache file
      * @return bool
      */
-    final private function _getCurrentToken()
+    private function _getCurrentToken()
     {
         $data = $this->_findByDate();
 
@@ -98,7 +98,7 @@ class Api
      * Get new token from the MT
      * @return bool
      */
-    final private function _getNewToken()
+    private function _getNewToken()
     {
         $yesterday = date('Y-m-d', time() - 60 * 60 * 24);
         $data = $this->_findByDate($yesterday);
@@ -145,7 +145,7 @@ class Api
      * @param string $date
      * @return string|null
      */
-    final private function _findByDate($date = null)
+    private function _findByDate($date = null)
     {
         $contents = '';
         $result = null;
