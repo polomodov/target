@@ -13,33 +13,39 @@ class Api
     /**
      * @var string
      */
-    private $_uri = 'https://target.my.com';
+    protected $_uri = 'https://target.my.com';
 
     /**
      * @var string|null
      */
-    private $_token = null;
+    protected $_token = null;
 
     /**
      * @var array
      */
-    private $_errors = [];
+    protected $_errors = [];
 
     /**
      * @var array
      */
-    private $_logs = [];
+    protected $_logs = [];
 
     /**
      * @var string
      */
-    private $_requestContents;
+    protected $_requestContents;
+
+    /**
+     * last request to myTarget
+     * @var array
+     */
+    protected $_lastRequest = [];
 
     /**
      * Connection data
      * @var array
      */
-    private $_connectionData = [
+    protected $_connectionData = [
         'client_id' => null,
         'client_secret' => null
     ];
@@ -48,7 +54,7 @@ class Api
      * Cache
      * @var array
      */
-    private $_cache = [
+    protected $_cache = [
         'dirName' => '.mobio',
         'dirPath' => null,
         'fileName' => 'myTarget.json',
@@ -82,7 +88,7 @@ class Api
      * Get token from the cache file
      * @return bool
      */
-    private function _getCurrentToken()
+    final protected function _getCurrentToken()
     {
         $data = $this->_findByDate();
 
@@ -98,7 +104,7 @@ class Api
      * Get new token from the MT
      * @return bool
      */
-    private function _getNewToken()
+    final protected function _getNewToken()
     {
         $yesterday = date('Y-m-d', time() - 60 * 60 * 24);
         $data = $this->_findByDate($yesterday);
@@ -145,7 +151,7 @@ class Api
      * @param string $date
      * @return string|null
      */
-    private function _findByDate($date = null)
+    final protected function _findByDate($date = null)
     {
         $contents = '';
         $result = null;
@@ -183,7 +189,7 @@ class Api
      */
     public function request($requestUri, $method = 'GET', $postParams = null, $doAuth = true)
     {
-        $client = new GuzzleHttp\Client(['base_uri' => $this->_uri]);
+        $client = new GuzzleHttp\Client(['base_uri' => $this->_uri, 'verify' => false]);
         $requestData = [];
 
         if ($postParams && is_array($postParams)) {
@@ -199,10 +205,20 @@ class Api
 
         try {
             $response = $client->request($method, $requestUri, $requestData);
+            $content  = $response->getBody()->getContents();
+            
+            $this->_lastRequest = [
+                'method'      => $method,
+                'requestUri'  => $requestUri,
+                'requestData' => $requestData,
+                'responseCode'=> $response->getStatusCode(),
+                'responseBody'=> $content,
+            ];
+
             if ($response->getStatusCode() != 200) {
                 $this->_error("Error: call to URL {$this->_uri} failed with status {$response->getStatusCode()}");
             }
-            $this->_requestContents = $response->getBody()->getContents();
+            $this->_requestContents = $content;
         } catch (RequestException $ex) {
             $this->_error($ex->getMessage());
         }
@@ -226,7 +242,15 @@ class Api
             return $this->showErrors();
         }
 
-        return json_decode($this->_requestContents, $asArray);
+        try {
+            $decoded = json_decode($this->_requestContents, $asArray);
+        } catch (Exception $e) {
+            $msg = 'Error message: ' . $e->getMessage();
+            $msg .= "\n\n";
+            $msg .= var_export($this->_lastRequest, true);
+            throw new Exception($msg, 1);
+        }
+        return $decoded;
     }
 
     /**
@@ -283,7 +307,7 @@ class Api
      * @param string|null $message
      * @return array
      */
-    private function _error($message = null)
+    protected function _error($message = null)
     {
         if ($message) {
             $this->_errors[] = $message;
@@ -297,7 +321,7 @@ class Api
      * @param string|null $message
      * @return void
      */
-    private function _log($message)
+    protected function _log($message)
     {
         if ($message) {
             $this->_logs[] = $message;
