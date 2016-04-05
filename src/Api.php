@@ -242,14 +242,14 @@ class Api
             return $this->showErrors();
         }
 
-        try {
-            $decoded = json_decode($this->_requestContents, $asArray);
-        } catch (Exception $e) {
+        $decoded = json_decode($this->_requestContents, $asArray);
+        if (is_null($decoded)) {
             $msg = 'Error message: ' . $e->getMessage();
             $msg .= "\n\n";
             $msg .= var_export($this->_lastRequest, true);
             throw new Exception($msg, 1);
         }
+
         return $decoded;
     }
 
