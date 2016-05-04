@@ -288,7 +288,6 @@ class Api
     }
 
     /**
-
      * @return string
      */
     public function showErrors()
@@ -328,5 +327,14 @@ class Api
         }
 
         $this->_logs;
+    }
+
+    /**
+     * Uri setter
+     * @param $uri
+     */
+    public function setUri($uri)
+    {
+        $this->_uri = $uri;
     }
 }
