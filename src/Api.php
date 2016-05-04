@@ -244,10 +244,12 @@ class Api
 
         $decoded = json_decode($this->_requestContents, $asArray);
         if (is_null($decoded)) {
-            $msg = 'Error message: ' . $e->getMessage();
+            $msg = 'Error message: Json was not decoded';
             $msg .= "\n\n";
+            $msg .= "Request is: ";
+            $msg .= "\n";
             $msg .= var_export($this->_lastRequest, true);
-            throw new Exception($msg, 1);
+            echo $msg;
         }
 
         return $decoded;
