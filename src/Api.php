@@ -250,9 +250,10 @@ class Api
         $decoded = json_decode($this->_requestContents, $asArray);
         if (is_null($decoded)) {
             $msg = 'Error message: Json was not decoded';
-            $msg .= "\n\n";
+            $msg .= PHP_EOL;
+            $msg .= PHP_EOL;
             $msg .= "Request is: ";
-            $msg .= "\n";
+            $msg .= PHP_EOL;
             $msg .= var_export($this->_lastRequest, true);
             echo $msg;
         }
@@ -299,13 +300,13 @@ class Api
      */
     public function showErrors()
     {
-        $message = "Errors: \n----------\n";
+        $message = "Errors: " . PHP_EOL . "----------" . PHP_EOL;
 
         foreach ($this->_errors as $error) {
             $message .= '* ' . $error;
         }
 
-        echo "----------\n" . $message;
+        echo "----------" . PHP_EOL . $message;
     }
 
     /**
