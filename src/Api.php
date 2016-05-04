@@ -63,17 +63,22 @@ class Api
 
 
     /**
-     * Api constructor
-     * @param string $clientId
-     * @param string $clientSecret
+     * Api constructor.
+     * @param $clientId
+     * @param $clientSecret
+     * @param array $options
      */
-    public function __construct($clientId, $clientSecret)
+    public function __construct($clientId, $clientSecret, array $options = [])
     {
         $this->_connectionData['client_id'] = $clientId;
         $this->_connectionData['client_secret'] = $clientSecret;
 
         $this->_cache['dirPath'] = getenv('HOME') . DIRECTORY_SEPARATOR . $this->_cache['dirName'];
         $this->_cache['filePath'] = $this->_cache['dirPath'] . DIRECTORY_SEPARATOR . $this->_cache['fileName'];
+
+        if (!empty($options['uri'])) {
+            $this->_uri = $options['uri'];
+        }
 
         if ($this->_getCurrentToken()) {
             $this->_log('Get saved token');
