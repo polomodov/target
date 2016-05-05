@@ -1,7 +1,7 @@
 {
   "name": "mobio/target",
   "description": "PHP library for myTarget API",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "type": "library",
   "keywords": ["php", "myTarget"],
   "license": "MIT",
