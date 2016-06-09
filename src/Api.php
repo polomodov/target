@@ -93,7 +93,7 @@ class Api
      * Get token from the cache file
      * @return bool
      */
-    final protected function _getCurrentToken()
+    protected function _getCurrentToken()
     {
         $data = $this->_findByDate();
 
@@ -109,7 +109,7 @@ class Api
      * Get new token from the MT
      * @return bool
      */
-    final protected function _getNewToken()
+    protected function _getNewToken()
     {
         $yesterday = date('Y-m-d', time() - 60 * 60 * 24);
         $data = $this->_findByDate($yesterday);
@@ -156,7 +156,7 @@ class Api
      * @param string $date
      * @return string|null
      */
-    final protected function _findByDate($date = null)
+    protected function _findByDate($date = null)
     {
         $contents = '';
         $result = null;
@@ -220,8 +220,9 @@ class Api
                 'responseBody'=> $content,
             ];
 
-            if ($response->getStatusCode() != 200) {
-                $this->_error("Error: call to URL {$this->_uri} failed with status {$response->getStatusCode()}");
+            if ($response->getStatusCode() < 200 || $response->getStatusCode() > 200) {
+                $this->_error('Error: call to URL ' . $this->_uri . ' failed with status ' 
+                    . $response->getStatusCode());
             }
             $this->_requestContents = $content;
         } catch (RequestException $ex) {
@@ -252,7 +253,7 @@ class Api
             $msg = 'Error message: Json was not decoded';
             $msg .= PHP_EOL;
             $msg .= PHP_EOL;
-            $msg .= "Request is: ";
+            $msg .= 'Request is: ';
             $msg .= PHP_EOL;
             $msg .= var_export($this->_lastRequest, true);
             echo $msg;
@@ -290,7 +291,7 @@ class Api
     /**
      * @return string|null
      */
-    final public function getToken()
+    public function getToken()
     {
         return $this->_token;
     }
