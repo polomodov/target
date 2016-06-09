@@ -15,7 +15,7 @@ My Target API
 
 ```php
 <?php
-include __DIR__. "/vendor/autoload.php";
+require __DIR__. '/vendor/autoload.php';
 
 $client_id = '...';
 $client_secret = '...';
