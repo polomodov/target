@@ -139,6 +139,7 @@ class Api
             } else {
                 $postParams['grant_type'] = 'client_credentials';
             }
+
             $response = $this->request('/api/v2/oauth2/token.json', 'POST', $postParams, false);
         }
 
@@ -205,7 +206,10 @@ class Api
                             $result = $item;
                         }
                     } else {
-                        if ($item['client_id'] === $this->_connectionData['client_id'] && $item['date'] === $date) {
+                        if ($item['client_id'] === $this->_connectionData['client_id']
+                            && $item['date'] === $date
+                            && empty($item['agency_client_name'])
+                        ) {
                             $result = $item;
                         }
                     }
