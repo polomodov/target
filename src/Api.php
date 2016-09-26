@@ -47,7 +47,9 @@ class Api
      */
     protected $_connectionData = [
         'client_id' => null,
-        'client_secret' => null
+        'client_secret' => null,
+        'agency_client_name' => null,
+        'type' => 'client'
     ];
 
     /**
@@ -75,6 +77,11 @@ class Api
 
         $this->_cache['dirPath'] = getenv('HOME') . DIRECTORY_SEPARATOR . $this->_cache['dirName'];
         $this->_cache['filePath'] = $this->_cache['dirPath'] . DIRECTORY_SEPARATOR . $this->_cache['fileName'];
+
+        if (!empty($options['agency_client_name'])) {
+            $this->_connectionData['type'] = 'agency';
+            $this->_connectionData['agency_client_name'] = $options['agency_client_name'];
+        }
 
         if (!empty($options['uri'])) {
             $this->_uri = $options['uri'];
@@ -122,11 +129,17 @@ class Api
                 'grant_type' => 'refresh_token'
             ], false);
         } else {
-            $response = $this->request('/api/v2/oauth2/token.json', 'POST', [
+            $postParams = [
                 'client_id' => $this->_connectionData['client_id'],
                 'client_secret' => $this->_connectionData['client_secret'],
-                'grant_type' => 'client_credentials'
-            ], false);
+            ];
+            if ($this->_connectionData['type'] == 'agency') {
+                $postParams['agency_client_name'] = $this->_connectionData['agency_client_name'];
+                $postParams['grant_type'] = 'agency_client_credentials';
+            } else {
+                $postParams['grant_type'] = 'client_credentials';
+            }
+            $response = $this->request('/api/v2/oauth2/token.json', 'POST', $postParams, false);
         }
 
         $sourceContent = '';
@@ -139,16 +152,26 @@ class Api
             $jsonContent = [];
         }
 
-        $jsonContent[] = [
-            'client_id' => $this->_connectionData['client_id'],
-            'token' => $response->parse()->access_token,
-            'refresh_token' => $response->parse()->refresh_token,
-            'date' => date('Y-m-d')
-        ];
+        $token = $response->parse()->access_token;
 
-        file_put_contents($this->_cache['filePath'], json_encode($jsonContent));
+        if ($token) {
+            $item = [
+                'client_id' => $this->_connectionData['client_id'],
+                'token' => $token,
+                'refresh_token' => $response->parse()->refresh_token,
+                'date' => date('Y-m-d')
+            ];
 
-        $this->_token = $response->parse()->access_token;
+            if ($this->_connectionData['type'] == 'agency') {
+                $item['agency_client_name'] = $this->_connectionData['agency_client_name'];
+            }
+
+            $jsonContent[] = $item;
+
+            file_put_contents($this->_cache['filePath'], json_encode($jsonContent));
+        }
+
+        $this->_token = $token;
         return $this->_token !== null;
     }
 
@@ -174,8 +197,17 @@ class Api
 
             if (count($arrayData) > 0) {
                 foreach ($arrayData as $item) {
-                    if ($item['client_id'] === $this->_connectionData['client_id'] && $item['date'] === $date) {
-                        $result = $item;
+                    if ($this->_connectionData['type'] == 'agency') {
+                        if ($item['client_id'] === $this->_connectionData['client_id']
+                            && $item['agency_client_name'] === $this->_connectionData['agency_client_name']
+                            && $item['date'] === $date
+                        ) {
+                            $result = $item;
+                        }
+                    } else {
+                        if ($item['client_id'] === $this->_connectionData['client_id'] && $item['date'] === $date) {
+                            $result = $item;
+                        }
                     }
                 }
             }
@@ -211,7 +243,7 @@ class Api
         try {
             $response = $client->request($method, $requestUri, $requestData);
             $content  = $response->getBody()->getContents();
-            
+
             $this->_lastRequest = [
                 'method'      => $method,
                 'requestUri'  => $requestUri,
@@ -221,7 +253,7 @@ class Api
             ];
 
             if ($response->getStatusCode() < 200 || $response->getStatusCode() > 200) {
-                $this->_error('Error: call to URL ' . $this->_uri . ' failed with status ' 
+                $this->_error('Error: call to URL ' . $this->_uri . ' failed with status '
                     . $response->getStatusCode());
             }
             $this->_requestContents = $content;
